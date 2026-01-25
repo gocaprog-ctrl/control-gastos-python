@@ -1,0 +1,24 @@
+{
+    "balance": 0,
+    "categories": [
+        "food",
+        "rent",
+        "transport",
+        "salary",
+        "entertainment"
+    ],
+    "movements": [
+        {
+            "date": "2026-01-20",
+            "category": "food",
+            "amount": 12.5,
+            "description": "Lunch"
+        },
+        {
+            "date": "2026-01-21",
+            "category": "transport",
+            "amount": 3.2,
+            "description": "Bus"
+        }
+    ]
+}
