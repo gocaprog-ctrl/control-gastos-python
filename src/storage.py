@@ -11,8 +11,9 @@ def load_data(file_path: str =DATA_FILE_PATH) -> dict:
     """
     Load application data from a JSON file.
 
-    If the data directory or file does not exist, they are created
-    with default initial values.
+    If the data directory or the data file does not exist, they are created
+    with default initial values. If the file exists but contains invalid
+    JSON, it is automatically recovered and replaced with default data.
 
     Args:
         file_path (str): Path to the JSON data file.
@@ -20,14 +21,8 @@ def load_data(file_path: str =DATA_FILE_PATH) -> dict:
     Returns:
         dict: Application data including balance, categories and movements.
     """
-    data_dir = os.path.dirname(file_path)
-
-    #Ensure the data directory exists
-    if not os.path.isdir(data_dir):
-        os.makedirs(data_dir, exist_ok=True)
-    # If the data file does not exist, create it with default values
-    if not os.path.isfile(file_path):
-        initial_data = {
+    # Default application data
+    initial_data = {
             "balance": 0,
             "categories": [
                 "food",
@@ -38,16 +33,28 @@ def load_data(file_path: str =DATA_FILE_PATH) -> dict:
             ],
             "movements": []
         }
-        # Write the initial data to the JSON file
+
+    data_dir = os.path.dirname(file_path)
+
+    # Ensure directory exists
+    if not os.path.isdir(data_dir):
+        os.makedirs(data_dir, exist_ok=True)
+
+    # If the file does not exist, create it with default data
+    if not os.path.isfile(file_path):
         with open(file_path, "w") as file:
             json.dump(initial_data, file, indent=4)
-
         return initial_data
-    # If the file exist, read and return its contents
-    with open(file_path, "r") as file:
-        data = json.load(file)
-        
-    return data
+    
+    # If the file exist, try to load it
+    try:
+        with open(file_path, "r") as file:
+            return json.load(file)
+    except json.JSONDecodeError:
+        # Recover from corrupted JSON
+        with open(file_path, "w") as file:
+            json.dump(initial_data, file, indent=4)
+        return initial_data
 
 def save_data(data: dict, file_path: str = DATA_FILE_PATH) -> None:
     """
