@@ -89,5 +89,33 @@ def test_load_data_when_file_is_corrupt(tmp_path):
     assert loaded_data["categories"]
     assert loaded_data["movements"] == []
 
-def test_pytest_is_seeing_this():
-    assert True
+def test_save_data_overwrites_existing_file(tmp_path):
+    """
+    Ensure that save_data completely overwrites an existing JSON file.
+
+    This test verifies that when a data file already exists with previous
+    content, calling save_data replaces the file contents entirely with
+    the new data, without merging, preserving old values, or corrupting
+    the JSON structure.
+    """
+    #Arrange: create a temporary data file with existing (old) content
+    file_path = tmp_path / "data.json"
+    with open(file_path, "w") as file:
+        old_data = {}
+        json.dump(old_data, file)
+
+    # New data that should fully replace the old file contents
+    new_data = {
+        "balance": 0,
+        "categories": ["food", "salary", "rent"],            
+        "movements": []
+        }
+    
+    # Act: save the new data to the same file path
+    save_data(new_data, file_path)
+    
+    # Assert: the file contents must exactly match the new data 
+    with open (file_path, "r") as file:
+        loaded_data = json.load(file)
+    
+    assert loaded_data == new_data
