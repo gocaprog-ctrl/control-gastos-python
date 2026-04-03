@@ -45,5 +45,6 @@ class Movement:
             raise ValueError("Please enter 'income' or 'expense' as the type")
         if not isinstance(self.category, str):
             raise TypeError("Please enter a correct category")
+        self.category = self.category.lower()
         if not self.category:
             raise ValueError("Please enter a category")
