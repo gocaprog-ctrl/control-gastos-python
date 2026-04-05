@@ -1,5 +1,5 @@
 {
-    "balance": 88.0,
+    "balance": 164.0,
     "categories": [
         "food",
         "rent",
@@ -50,6 +50,27 @@
             "amount": 12.0,
             "type": "income",
             "description": "Sell Lintern"
+        },
+        {
+            "date": "2026-04-03",
+            "category": "food",
+            "amount": 12.0,
+            "type": "expense",
+            "description": ""
+        },
+        {
+            "date": "2026-04-03",
+            "category": "rent",
+            "amount": 100.0,
+            "type": "income",
+            "description": ""
+        },
+        {
+            "date": "2026-04-04",
+            "category": "food",
+            "amount": 12.0,
+            "type": "expense",
+            "description": "Ramen"
         }
     ]
 }

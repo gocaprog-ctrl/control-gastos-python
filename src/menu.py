@@ -28,38 +28,47 @@ def view_categories():
         for category in data["categories"]:
             print(f"{category.title()}\n")
 
+def process_movement(data, mov_type, category, amount, description, date):
+    new_movement = Movement(date=date, type=mov_type, 
+                            category=category, amount=amount, 
+                            description=description)
+    if new_movement.type == "expense":
+        data["balance"] -= new_movement.amount
+    elif new_movement.type == "income":
+        data["balance"] += new_movement.amount
+    movement_dict = asdict(new_movement)
+    movement_dict["date"] = movement_dict["date"].isoformat()
+    data["movements"].append(movement_dict)
+    return data
+
 def add_movement():
     try:
         data = load_data()
         date = datetime.date.today()
-        mov_type = input("\nWhich type 'expense' or 'income'? ").lower()
+        mov_type = input("\nWhich type 'expense' or 'income'? ").lower().strip()
         if mov_type not in ["expense", "income"]:
             raise ValueError
         print ("\nAvailable Categories:")
         while True:
             for categories in data["categories"]:
                 print(f"- {categories.title()}" )
-            category = input("\nWhich category? \n").lower()
+            category = input("\nWhich category? \n").lower().strip()
             if category not in data["categories"]:
                 print("\nWrong Category. Please try again.\n")
             else:
                 break
         amount = float(input("\nWhat amount? "))
         description = input("\nAdd a description (optional): ")
-        new_movement = Movement (date=date, type=mov_type, 
-                                category=category, amount=amount, 
-                                description=description)
-        if new_movement.type == "expense":
-            data["balance"] -= new_movement.amount
-        elif new_movement.type == "income":
-            data["balance"] += new_movement.amount
-        movement_dict = asdict(new_movement)
-        movement_dict["date"] = movement_dict["date"].isoformat()
-        data["movements"].append(movement_dict)
+        data = process_movement(data, mov_type, category, 
+                            amount, description,date)
         save_data(data)
         print("\nSave successfully")
     except (TypeError, ValueError):
         print("\nWrong Value. Please enter a correct value")
+
+def add_new_category(data, new_category):
+        data["categories"].append(new_category)
+        return data
 
 def add_category():
     try:
@@ -68,11 +77,27 @@ def add_category():
         if new_category in data["categories"]:
             print("\nThis category already exists")
         else:
-            data["categories"].append(new_category)
+            data = add_new_category(data, new_category)
             save_data(data)
     except(TypeError, ValueError):
         print("Wrong value. Please enter a correct value")
 
+def remove_category(data, del_category):
+    data["categories"].remove(del_category)
+    return data
+
+def delete_category():
+    try:
+        data = load_data()
+        del_category = input("Which category want delete? ").lower().strip()
+        if del_category in data["categories"]:
+            data = remove_category(data, del_category)
+            print("\nCategory Deleted. Saved Successfully.")
+            save_data(data)
+        else:
+            print("\nCategory not Deleted, please enter a valid category")
+    except(TypeError, ValueError):
+        print("Wrong category, write a correct category to delete.")
 
 def show_menu():
     while True:
@@ -96,10 +121,8 @@ def show_menu():
         elif menu_input == "5":
             add_category()
         elif menu_input == "6":
-            pass
+            delete_category()
         elif menu_input == "7":
             break
         else:
             print("Wrong input, please introduce a valid value.")
-
-show_menu()
