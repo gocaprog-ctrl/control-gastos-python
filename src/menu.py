@@ -1,5 +1,5 @@
-from storage import load_data, save_data
-from movements import Movement
+from src.storage import load_data, save_data
+from src.movements import Movement
 import datetime
 from dataclasses import asdict
 
