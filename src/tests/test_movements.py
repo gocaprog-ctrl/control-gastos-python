@@ -1,6 +1,9 @@
-import pytest
+"""Module providing test to ensure the movements"""
+
 import datetime
-from movements import Movement
+import pytest
+from src.movements import Movement
+
 
 valid_types = ["income", "expense", "INCOME", "EXPENSE", "Income", "Expense"]
 invalid_types = ["melon", "platano", "123", "incomee"]
@@ -105,7 +108,7 @@ def test_category_not_string(wrong_category):
             category = wrong_category,
             amount = 10,
             type = "income",
-            description = "" 
+            description = ""
         )
 
 def test_empty_category():

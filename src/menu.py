@@ -1,12 +1,23 @@
-from src.storage import load_data, save_data
-from src.movements import Movement
+"""Module proving the functions necessary to ensure
+    the correctly functioning of the menu and security manipulation of the
+    user."""
+
 import datetime
 from dataclasses import asdict
+from src.storage import load_data, save_data
+from src.movements import Movement
 
 def view_balance():
+
+    """Function to show the balance."""
+
     data = load_data()
     print(f"Your balance is: {data['balance']} $.")
+
 def view_movements():
+
+    """Function to show the movements."""
+
     data = load_data()
     if not data["movements"]:
         print("\nMovements not found.")
@@ -20,17 +31,23 @@ def view_movements():
             print(f"{date} - {category} - {amount}$ - {description}.\n")
 
 def view_categories():
+
+    """Funtion to show the categories with index."""
+
     data = load_data()
     if not data["categories"]:
         print("Categories not found.\n")
     else:
         print("\n===Your Categories===\n")
-        for category in data["categories"]:
-            print(f"{category.title()}\n")
+        for index,category in enumerate(data["categories"],start=1):
+            print(f"{index} - {category.title()}\n")
 
 def process_movement(data, mov_type, category, amount, description, date):
-    new_movement = Movement(date=date, type=mov_type, 
-                            category=category, amount=amount, 
+
+    """Function to process the user movements did."""
+
+    new_movement = Movement(date=date, type=mov_type,
+                            category=category, amount=amount,
                             description=description)
     if new_movement.type == "expense":
         data["balance"] -= new_movement.amount
@@ -42,70 +59,141 @@ def process_movement(data, mov_type, category, amount, description, date):
     return data
 
 def add_movement():
-    try:
-        data = load_data()
-        date = datetime.date.today()
+
+    """Function to add movement."""
+
+    data = load_data()
+    date = datetime.date.today()
+
+
+
+    #Entrance
+    while True:
         mov_type = input("\nWhich type 'expense' or 'income'? ").lower().strip()
-        if mov_type not in ["expense", "income"]:
-            raise ValueError
-        print ("\nAvailable Categories:")
-        while True:
-            for categories in data["categories"]:
-                print(f"- {categories.title()}" )
-            category = input("\nWhich category? \n").lower().strip()
-            if category not in data["categories"]:
-                print("\nWrong Category. Please try again.\n")
-            else:
-                break
-        amount = float(input("\nWhat amount? "))
-        description = input("\nAdd a description (optional): ")
-        data = process_movement(data, mov_type, category, 
-                            amount, description,date)
-        save_data(data)
-        print("\nSave successfully")
-    except (TypeError, ValueError):
-        print("\nWrong Value. Please enter a correct value")
+        if mov_type in ["expense", "income"]:
+            break
+        print("\nInvalid value, please use 'income' or 'expense'")
+
+    #Categories
+    print ("\nAvailable Categories:\n")
+    while True:
+        for index, categories in enumerate(data["categories"], start=1):
+            print(f"{index} - {categories.title()}\n" )
+        try:
+            category = int(input("\nWhich category number? "))
+        except ValueError:
+            print("\nPlease, enter a positive number.\n")
+            continue
+        if category < 1 or category > len(data["categories"]):
+            print("\nOut of range, please enter a number on index range.\n")
+        else:
+            break
+
+    #Amount
+    while True:
+        try:
+            amount = float(input("\nWhat amount? "))
+        except ValueError:
+            print("\nEnter a number.")
+            continue
+        if amount < 0:
+            print("\nAmount must be positive.")
+            continue
+        break
+
+    # Description
+    description = input("\nAdd a description (optional): ")
+
+    #Process
+    try:
+        category_index = category - 1
+        category_name = data["categories"][category_index]
+        data = process_movement(data, mov_type, category_name,
+                        amount, description,date)
+    except ValueError as e:
+        print(f"\n{e}")
+        return
+
+    #Save
+    save_data(data)
+    print("\nSave successfully")
 
 def add_new_category(data, new_category):
-        data["categories"].append(new_category)
-        return data
+
+    """Add new category, logical part."""
+
+    data["categories"].append(new_category)
+    return data
 
 def add_category():
-    try:
-        data = load_data()
-        new_category = input("Which category will you add? ").lower()
-        if new_category in data["categories"]:
-            print("\nThis category already exists")
-        else:
-            data = add_new_category(data, new_category)
-            save_data(data)
-    except(TypeError, ValueError):
-        print("Wrong value. Please enter a correct value")
+
+    """Function add category, users inputs."""
+
+    data = load_data()
+    new_category = input("Which category will you add? ").lower()
+    if not new_category:
+        print("\nCategory cannot be empty.")
+        return
+
+    if not new_category.isalpha():
+        print("\nCategory must contain only letters")
+        return
+    if new_category in data["categories"]:
+        print("\nThis category already exists")
+        return
+
+    data = add_new_category(data, new_category)
+    save_data(data)
+    print("\nCategory added successfully.")
+
 
 def remove_category(data, del_category):
-    data["categories"].remove(del_category)
+
+    """Function to remove category, logical part."""
+
+    data["categories"].pop(del_category -1)
     return data
 
 def delete_category():
-    try:
-        data = load_data()
-        del_category = input("Which category want delete? ").lower().strip()
-        if del_category in data["categories"]:
-            data = remove_category(data, del_category)
-            print("\nCategory Deleted. Saved Successfully.")
-            save_data(data)
-        else:
-            print("\nCategory not Deleted, please enter a valid category")
-    except(TypeError, ValueError):
-        print("Wrong category, write a correct category to delete.")
+
+    """Function to delete category, users inputs"""
+
+    data = load_data()
+
+    while True:
+        print("\n===Your Categories===\n")
+        for index, categories in enumerate(data["categories"], start=1):
+            print(f"{index} - {categories.title()}\n" )
+
+        try:
+            del_category = int(input("\nSelect number to delete (0 to cancel): "))
+        except ValueError:
+            print("\nPlease enter a valid number.")
+            continue
+        if del_category == 0:
+            print("\nOperation cancelled.")
+            return
+        if del_category < 1 or del_category > len(data["categories"]):
+            print("\nThis category number did not exist.")
+            continue
+
+
+        data = remove_category(data, del_category)
+        save_data(data)
+
+        print("\nCategory Deleted. Saved Successfully.")
+        break
 
 def show_menu():
+
+    """Function to show the menu options and interact with the user."""
+
     while True:
         print("\n=== Cost Control ===\n")
         print("1. View Balance")
         print("2. View Movements")
         print("3. Add Movements")
-        print("4. View Category")
+        print("4. View Categories")
         print("5. Add Category")
         print("6. Delete Category")
         print("7. Exit")

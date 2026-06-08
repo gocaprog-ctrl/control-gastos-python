@@ -8,3 +8,7 @@ __pycache__/
 # Virtual environments
 .venv/
 env/
+
+# Ignore pylint archive
+.pylintrc
+

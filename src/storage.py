@@ -1,5 +1,10 @@
+"""Module providing the root correctly, management the directory and create
+    JSON data base."""
+
 import os
+
 import json
+
 # Root directory of the project, used to build absolute paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Path to the data directory
@@ -42,17 +47,17 @@ def load_data(file_path: str =DATA_FILE_PATH) -> dict:
 
     # If the file does not exist, create it with default data
     if not os.path.isfile(file_path):
-        with open(file_path, "w") as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             json.dump(initial_data, file, indent=4)
         return initial_data
-    
+
     # If the file exist, try to load it
     try:
-        with open(file_path, "r") as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
     except json.JSONDecodeError:
         # Recover from corrupted JSON
-        with open(file_path, "w") as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             json.dump(initial_data, file, indent=4)
         return initial_data
 
@@ -68,5 +73,5 @@ def save_data(data: dict, file_path: str = DATA_FILE_PATH) -> None:
     data_dir = os.path.dirname(file_path)
     if not os.path.isdir(data_dir):
         os.makedirs(data_dir)
-    with open(file_path, "w") as file:
+    with open(file_path, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4)

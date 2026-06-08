@@ -6,12 +6,18 @@ saved to and loaded from a JSON file using the storage module.
 """
 
 # Import functions responsible for saving and loading data to test them
-from src.storage import save_data, load_data
-import pytest
 import json
+import pytest
+from src.storage import save_data, load_data
 
 @pytest.fixture
 def test_data():
+    """
+    Test that verifies the correct format on the JSON. 
+    
+    Returns:
+        dict[str, Any]
+    """
     return {
         "balance": 0,
         "categories": [
@@ -62,7 +68,7 @@ def test_load_data_when_file_missing(tmp_path):
     """
     # Arrange: create a temporary path where data.json does NOT exist yet
     file_path = tmp_path / "data.json"
-    
+
     # Act: call load_data, which should create the directory and the file
     load_data(file_path=str(file_path))
 
@@ -78,7 +84,7 @@ def test_load_data_when_file_is_corrupt(tmp_path):
     """
     # Arrange
     file_path = tmp_path / "data.json"
-    with open(file_path, "w") as file:
+    with open(file_path, "w", encoding="utf-8") as file:
         file.write("this is not valid json")
 
     # Act
@@ -100,7 +106,7 @@ def test_save_data_overwrites_existing_file(tmp_path):
     """
     #Arrange: create a temporary data file with existing (old) content
     file_path = tmp_path / "data.json"
-    with open(file_path, "w") as file:
+    with open(file_path, "w", encoding="utf-8") as file:
         old_data = {}
         json.dump(old_data, file)
 
@@ -110,12 +116,12 @@ def test_save_data_overwrites_existing_file(tmp_path):
         "categories": ["food", "salary", "rent"],            
         "movements": []
         }
-    
+
     # Act: save the new data to the same file path
     save_data(new_data, file_path)
-    
-    # Assert: the file contents must exactly match the new data 
-    with open (file_path, "r") as file:
+
+    # Assert: the file contents must exactly match the new data
+    with open (file_path, "r", encoding="utf-8") as file:
         loaded_data = json.load(file)
-    
+
     assert loaded_data == new_data
