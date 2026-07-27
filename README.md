@@ -1,6 +1,7 @@
 # Cost Control / Control de Gastos
 
 EN
+
 This is my first project. I started as a self-taught programmer learning Python, and I am still learning every day.
 
 I wanted to take things a step further by building a real project to learn how to manage and maintain software projects using GitHub.

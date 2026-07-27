@@ -12,7 +12,7 @@ def view_balance():
     """Function to show the balance."""
 
     data = load_data()
-    print(f"Your balance is: {data['balance']} $.")
+    print(f"\nYour balance is: {data['balance']} $.")
 
 def view_movements():
 
@@ -191,12 +191,12 @@ def show_menu():
     while True:
         print("\n=== Cost Control ===\n")
         print("1. View Balance")
-        print("2. View Movements")
-        print("3. Add Movements")
-        print("4. View Categories")
-        print("5. Add Category")
-        print("6. Delete Category")
-        print("7. Exit")
+        print("\n2. View Movements")
+        print("\n3. Add Movements")
+        print("\n4. View Categories")
+        print("\n5. Add Category")
+        print("\n6. Delete Category")
+        print("\n7. Exit")
         menu_input = input("\nIntroduce your option menu: ")
         if menu_input == "1":
             view_balance()

@@ -71,7 +71,7 @@ def test_remove_category():
     """Function test to ensure correctly remove a category."""
 
     # Arrange
-    remove_category_name = "food"
+    remove_category_name = 1
 
     data = {"balance": 100,
             "categories": ["food", "rent", "transport", "salary","extras"],
@@ -83,5 +83,5 @@ def test_remove_category():
     data_result = remove_category(data, del_category=remove_category_name)
 
     # Assert
-    assert remove_category_name not in data_result["categories"]
+    assert "food" not in data_result["categories"]
     assert len(data_result["categories"]) == initial_count - 1
