@@ -12,3 +12,6 @@ env/
 # Ignore pylint archive
 .pylintrc
 
+# Data files
+data/data.json
+
