@@ -101,7 +101,7 @@ def add_movement():
             continue
         break
 
-    # Description
+    #Description
     description = input("\nAdd a description (optional): ")
 
     #Process
@@ -154,6 +154,15 @@ def remove_category(data, del_category):
     data["categories"].pop(del_category -1)
     return data
 
+def has_associated_movements(data, category):
+
+    """Function to check if a category has associated movements."""
+
+    for movement in data["movements"]:
+        if movement["category"] == category:
+            return True
+    return False
+
 def delete_category():
 
     """Function to delete category, users inputs"""
@@ -162,11 +171,12 @@ def delete_category():
 
     while True:
         print("\n===Your Categories===\n")
-        for index, categories in enumerate(data["categories"], start=1):
-            print(f"{index} - {categories.title()}\n" )
+        for index, category in enumerate(data["categories"], start=1):
+            print(f"{index} - {category.title()}\n" )
 
         try:
             del_category = int(input("\nSelect number to delete (0 to cancel): "))
+            selected_category = data["categories"][del_category - 1]
         except ValueError:
             print("\nPlease enter a valid number.")
             continue
@@ -176,6 +186,10 @@ def delete_category():
         if del_category < 1 or del_category > len(data["categories"]):
             print("\nThis category number did not exist.")
             continue
+        if has_associated_movements(data, selected_category):
+            print(f"\nCategory {selected_category} cannot be deleted "
+                  "because it has associated movements.")
+            return
 
 
         data = remove_category(data, del_category)
