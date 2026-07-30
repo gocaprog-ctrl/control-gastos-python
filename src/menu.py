@@ -19,16 +19,110 @@ def view_movements():
     """Function to show the movements."""
 
     data = load_data()
+
+    while True:
+        print("\n===Movements Menu===\n")
+        print("1. View All Movements")
+        print("\n2. View Movements by Category")
+        print("\n3. View Movements by Type")
+        print("\n0. Back to Main Menu")
+        choice = input("\nSelect an option: ")
+        if choice == "1":
+            view_all_movements(data)
+        elif choice == "2":
+            view_movements_by_category(data)
+        elif choice == "3":
+            view_movements_by_type(data)
+        elif choice == "0":
+            break
+        else:
+            print("\nInvalid option.")
+
+def view_all_movements(data):
+
+    """Function to show all the movements."""
+
     if not data["movements"]:
         print("\nMovements not found.")
-    else:
-        print("\n===Your Last Movements===\n")
+        return
+
+    print("\n===Your Last Movements===\n")
+    for movement in data["movements"]:
+        date = movement['date']
+        category = movement['category'].title()
+        amount = movement['amount']
+        description = movement['description']
+        print(f"{date} - {category} - {amount}$ - {description}.\n")
+
+def view_movements_by_category(data):
+
+    """Function to show the movements by category."""
+
+    if not data["movements"]:
+        print("\nMovements not found.")
+        return
+    if not data["categories"]:
+        print("\nCategories not found.")
+        return
+
+    while True:
+        view_categories()
+        try:
+            category_choice = int(input("\nSelect Category (0 to cancel): "))
+        except ValueError:
+            print("\nPlease enter a valid number.")
+            continue
+        if category_choice == 0:
+            print("\nOperation cancelled.")
+            return
+        if category_choice < 1 or category_choice > len(data["categories"]):
+            print("\nThis category number did not exist.")
+            continue
+        selected_category = data["categories"][category_choice - 1]
+        movement_found = False
+        print(f"\n===Movements for {selected_category.title()}===\n")
         for movement in data["movements"]:
-            date = movement['date']
-            category = movement['category'].title()
-            amount = movement['amount']
-            description = movement['description']
-            print(f"{date} - {category} - {amount}$ - {description}.\n")
+            if movement["category"] == selected_category:
+                date = movement['date']
+                category = movement['category'].title()
+                amount = movement['amount']
+                description = movement['description']
+                print(f"{date} - {category} - {amount}$ - {description}.")
+                movement_found = True
+        if not movement_found:
+            print(f"\nNo movements found for category: {selected_category.title()}.")
+
+
+def view_movements_by_type(data):
+
+    """Function to show the movements by type."""
+
+    if not data["movements"]:
+        print("\nMovements not found.")
+        return
+
+    while True:
+        mov_choice = input("\nSelect Type 'expense' or 'income' (0 to cancel): ").strip().lower()
+
+        if mov_choice == "0":
+            print("\nOperation cancelled.")
+            return
+        if mov_choice not in ["expense", "income"]:
+            print("\nInvalid value, please use 'income' or 'expense'")
+            continue
+        movement_found = False
+        print(f"\n===Movements for {mov_choice.title()}===\n")
+        for movement in data["movements"]:
+            if movement["type"] == mov_choice:
+                date = movement['date']
+                category = movement['category'].title()
+                amount = movement['amount']
+                description = movement['description']
+                print(f"{date} - {category} - {amount}$ - {description}.\n")
+                movement_found = True
+        if not movement_found:
+            print(f"\nNo movements found for type: {mov_choice.title()}.")
+
 
 def view_categories():
 
@@ -64,8 +158,6 @@ def add_movement():
 
     data = load_data()
     date = datetime.date.today()
-
-
 
     #Entrance
     while True:
