@@ -14,6 +14,12 @@ def view_balance():
     data = load_data()
     print(f"\nYour balance is: {data['balance']} $.")
 
+def order_movements_by_date(movements):
+
+    """Function to order the movements by date."""
+
+    return sorted(movements, key=lambda x: x['date'], reverse=True)
+
 def view_movements():
 
     """Function to show the movements."""
@@ -46,8 +52,10 @@ def view_all_movements(data):
         print("\nMovements not found.")
         return
 
-    print("\n===Your Last Movements===\n")
-    for movement in data["movements"]:
+    ordered_movements = order_movements_by_date(data["movements"])
+
+    print("\n===Your Movements===\n")
+    for movement in ordered_movements:
         date = movement['date']
         category = movement['category'].title()
         amount = movement['amount']
@@ -65,6 +73,8 @@ def view_movements_by_category(data):
         print("\nCategories not found.")
         return
 
+    ordered_movements = order_movements_by_date(data["movements"])
+
     while True:
         view_categories()
         try:
@@ -81,7 +91,7 @@ def view_movements_by_category(data):
         selected_category = data["categories"][category_choice - 1]
         movement_found = False
         print(f"\n===Movements for {selected_category.title()}===\n")
-        for movement in data["movements"]:
+        for movement in ordered_movements:
             if movement["category"] == selected_category:
                 date = movement['date']
                 category = movement['category'].title()
@@ -92,7 +102,6 @@ def view_movements_by_category(data):
         if not movement_found:
             print(f"\nNo movements found for category: {selected_category.title()}.")
 
-
 def view_movements_by_type(data):
 
     """Function to show the movements by type."""
@@ -100,6 +109,8 @@ def view_movements_by_type(data):
     if not data["movements"]:
         print("\nMovements not found.")
         return
+
+    ordered_movements = order_movements_by_date(data["movements"])
 
     while True:
         mov_choice = input("\nSelect Type 'expense' or 'income' (0 to cancel): ").strip().lower()
@@ -112,7 +123,7 @@ def view_movements_by_type(data):
             continue
         movement_found = False
         print(f"\n===Movements for {mov_choice.title()}===\n")
-        for movement in data["movements"]:
+        for movement in ordered_movements:
             if movement["type"] == mov_choice:
                 date = movement['date']
                 category = movement['category'].title()
@@ -122,7 +133,6 @@ def view_movements_by_type(data):
                 movement_found = True
         if not movement_found:
             print(f"\nNo movements found for type: {mov_choice.title()}.")
-
 
 def view_categories():
 
