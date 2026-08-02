@@ -157,7 +157,6 @@ def add_movement():
     """Function to add movement."""
 
     data = load_data()
-    date = datetime.date.today()
 
     #Entrance
     while True:
@@ -172,7 +171,7 @@ def add_movement():
         for index, categories in enumerate(data["categories"], start=1):
             print(f"{index} - {categories.title()}\n" )
         try:
-            category = int(input("\nWhich category number? "))
+            category = int(input("Which category number? "))
         except ValueError:
             print("\nPlease, enter a positive number.\n")
             continue
@@ -195,6 +194,21 @@ def add_movement():
 
     #Description
     description = input("\nAdd a description (optional): ")
+
+    #Date
+    while True:
+        date_input = input("\nEnter the date (YYYY-MM-DD) or leave empty for today: ")
+        if not date_input:
+            date = datetime.date.today()
+            break
+        try:
+            date = datetime.datetime.strptime(date_input, "%Y-%m-%d").date()
+            if date > datetime.date.today():
+                print("\nDate cannot be in the future.")
+                continue
+            break
+        except ValueError:
+            print("\nInvalid date. Please use YYYY-MM-DD format.")
 
     #Process
     try:
