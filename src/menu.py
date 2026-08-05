@@ -31,6 +31,7 @@ def view_movements():
         print("1. View All Movements")
         print("\n2. View Movements by Category")
         print("\n3. View Movements by Type")
+        print("\n4. View Movements by Date")
         print("\n0. Back to Main Menu")
         choice = input("\nSelect an option: ")
         if choice == "1":
@@ -39,6 +40,8 @@ def view_movements():
             view_movements_by_category(data)
         elif choice == "3":
             view_movements_by_type(data)
+        elif choice == "4":
+            view_movements_by_date_range(data)
         elif choice == "0":
             break
         else:
@@ -97,7 +100,7 @@ def view_movements_by_category(data):
                 category = movement['category'].title()
                 amount = movement['amount']
                 description = movement['description']
-                print(f"{date} - {category} - {amount}$ - {description}.")
+                print(f"{date} - {category} - {amount}$ - {description}.\n")
                 movement_found = True
         if not movement_found:
             print(f"\nNo movements found for category: {selected_category.title()}.")
@@ -133,6 +136,69 @@ def view_movements_by_type(data):
                 movement_found = True
         if not movement_found:
             print(f"\nNo movements found for type: {mov_choice.title()}.")
+
+def view_movements_by_date_range(data):
+
+    """Function to show movements by date range"""
+
+    if not data["movements"]:
+        print("\nMovements not found.")
+        return
+
+    ordered_movements = order_movements_by_date(data["movements"])
+
+    while True:
+
+        start_date_input = input("\nEnter the start date (YYYY-MM-DD) or leave empty to cancel: ")
+
+        if not start_date_input:
+            print("\nOperation cancelled.")
+            return
+
+        try:
+            start_date = datetime.datetime.strptime(start_date_input, '%Y-%m-%d').date()
+            if start_date > datetime.date.today():
+                print("\nDate cannot be in the future.")
+                continue
+            break
+        except ValueError:
+            print("\nInvalid date. Please use YYYY-MM-DD format.")
+
+    while True:
+
+        end_date_input = input("\nEnter the end date (YYYY-MM-DD) or leave empty to cancel: ")
+
+        if not end_date_input:
+            print("\nOperation cancelled.")
+            return
+
+        try:
+            end_date = datetime.datetime.strptime(end_date_input, '%Y-%m-%d').date()
+            if end_date > datetime.date.today():
+                print("\nDate cannot be in the future.")
+                continue
+            if end_date < start_date:
+                print("\nEnd date cannot be earlier than start date.")
+                continue
+            break
+        except ValueError:
+            print("\nInvalid date. Please use YYYY-MM-DD format.")
+
+
+    movement_found = False
+    print(f"\n===Movements from {start_date} to {end_date}===\n")
+
+    for movement in ordered_movements:
+        movement_date = datetime.datetime.strptime(movement["date"], "%Y-%m-%d").date()
+        if start_date <= movement_date <= end_date:
+            date = movement['date']
+            category = movement['category'].title()
+            amount = movement['amount']
+            description = movement['description']
+            print(f"{date} - {category} - {amount}$ - {description}.\n")
+            movement_found = True
+    if not movement_found:
+        print("No movements found in the selected date range.")
 
 def view_categories():
 
@@ -261,7 +327,6 @@ def add_category():
     data = add_new_category(data, new_category)
     save_data(data)
     print("\nCategory added successfully.")
-
 
 def remove_category(data, del_category):
 
